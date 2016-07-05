@@ -1,0 +1,58 @@
+version: '2'
+services:
+  nginx:
+    build: docker/nginx/
+    ports:
+      - '80:80'
+    volumes_from:
+      - app
+    links:
+      - php
+
+  php:
+    build: docker/php/
+    expose:
+      - 9000
+    links:
+      - mysql
+    volumes_from:
+      - app
+
+  composer:
+    build: docker/composer/
+    volumes:
+      - ~/.composer:/composer
+    volumes_from:
+      - app
+    command: ""
+
+  nodejs:
+    build: docker/nodejs/
+    volumes:
+      - ~/.npm:/root/.npm
+    volumes_from:
+      - app
+
+  app:
+    image: debian:jessie
+    volumes:
+      - .:/var/www
+    command: "true"
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - '3306:3306'
+    volumes_from:
+      - data
+    environment:
+      MYSQL_DATABASE: db_name
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 123
+      MYSQL_ROOT_PASSWORD: 123
+
+  data:
+    image: debian:jessie
+    volumes:
+      - /var/lib/mysql
+    command: "true"
