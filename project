@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+#TODO add autocompletition
+#TODO get from env variables set by docker
+ip="127.0.0.1"
+hosts="project.dev"
+
+case "$1" in
+    up)
+        ./project destroy
+        echo "Adding hosts"
+        sudo bash -c "echo '${ip} ${hosts}' >> /etc/hosts"
+        docker-compose up -d --build
+        ./project composer install
+        ./project npm install
+        ./project npm run build
+        echo "Your project is ready. Happy coding.";;
+    destroy)
+        docker-compose down --rmi local
+        echo "Removing hosts"
+        sudo sh -c "grep -v '${ip} ${hosts}' /etc/hosts > hosts; mv hosts /etc/hosts";;
+    start)
+        docker-compose up -d;;
+    stop)
+        docker-compose stop;;
+    npm)
+        docker-compose run nodejs npm ${@:2};;
+    composer)
+        docker-compose run composer ${@:2};;
+    php)
+        docker-compose exec php php ${@:2};;
+    phpunit)
+        docker-compose exec php php vendor/bin/phpunit ${@:2};;
+    *)
+        echo "Usage: $0 {up|destroy|start|stop|npm|composer|php|phpunit}"
+        exit 1
+esac
