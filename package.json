@@ -1,0 +1,20 @@
+{
+  "name": "myproject",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "autoprefixer": "^6.3.3",
+    "node-sass": "^3.4.2",
+    "postcss-cli": "^2.5.1"
+  },
+  "dependencies": {
+  },
+  "scripts": {
+    "clean": "rm -fr public/css/*.* public/js/*.*",
+    "prebuild": "npm run -s clean",
+    "build": "npm run build:css",
+    "build:css": "npm run -s sass resources/sass/app.scss | npm run -s postcss public/css/app.css",
+    "sass": "node-sass --output-style compressed",
+    "postcss": "postcss --use autoprefixer --autoprefixer.browsers '> 5%' -o"
+  }
+}
